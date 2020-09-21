@@ -16,20 +16,29 @@ vi /etc/my.cnf
 Add the following entries under [mysqld] section and don’t forget to replace DevOps with database name that you would like to replicate on Slave.
 
 server-id = 1
+
 binlog-do-db=DevOps
+
 relay-log = /var/lib/mysql/mysql-relay-bin
+
 relay-log-index = /var/lib/mysql/mysql-relay-bin.index
+
 log-error = /var/lib/mysql/mysql.err
+
 master-info-file = /var/lib/mysql/mysql-master.info
+
 relay-log-info-file = /var/lib/mysql/mysql-relay-log.info
+
 log-bin = /var/lib/mysql/mysql-bin
+
 Restart the MySQL service.
-
-### systemctl restart mysqld
-
+```bash
+systemctl restart mysqld
+```
 Login into MySQL as root user and create the slave user and grant privileges for replication. Replace slave_user with user and your_password with password.
-
-### mysql
+```bash
+mysql -u root -p
+```
 mysql> CREATE USER 'slave_user'@'%' IDENTIFIED BY 'password'; 
 
 mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%';
@@ -41,23 +50,30 @@ mysql> FLUSH TABLES WITH READ LOCK;
 mysql> SHOW MASTER STATUS;
 
 +------------------+----------+--------------+------------------+
+
 | File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
+
 +------------------+----------+--------------+------------------+
+
 | mysql-bin.000003 | 1520     | DevOps    	 |                  |
+
 +------------------+----------+--------------+------------------+
+
 1 row in set (0.00 sec)
 
 mysql> quit;
 Please write down the File (mysql-bin.000003) and Position (11128001) numbers, we required these numbers later on Slave server. Next apply READ LOCK to databases to export all the database and master database information with mysqldump command.
-
-###  mysqldump -u root -p --all-databases --master-data > /root/dbdump.db
+```bash
+mysqldump -u root -p --all-databases --master-data > /root/dbdump.db
+```
 Once you’ve dump all the databases, now again connect to mysql as root user and unlcok tables.
 
 mysql> UNLOCK TABLES;
 mysql> quit;
 Upload the database dump file on Slave Server (192.168.1.2) using SCP command.
-
+```bash
 scp /root/dbdump.db root@192.168.1.2:/root/
+```
 That’s it we have successfully configured Master server, let’s proceed to Phase II section.
 
 Phase II: Configure Slave Server (192.168.1.2) for Replication
@@ -65,29 +81,37 @@ In Phase II, we do the installation of MySQL, setting up Replication and then ve
 
 Install a MySQL in Slave Server
 If you don’t have MySQL installed, then install it using YUM command.
-
-### yum install @mysql
-Configure a MySQL in Slave Server
+```bash
+yum install @mysql
+```
+## Configure a MySQL in Slave Server
 Open my.cnf configuration file with VI editor.
-
-### vi /etc/my.cnf
+```bash
+vi /etc/my.cnf
+```
 Add the following entries under [mysqld] section and don’t forget to replace IP address of Master server, tecmint with database name etc, that you would like to replicate with Master.
 
 [mysqld]
 server-id = 2
 
 Now import the dump file that we exported in earlier command and restart the MySQL service.
-
-### mysql -u root -p < /root/dbdump.db
-### systemctl restart mysqld
+```bash
+mysql -u root -p < /root/dbdump.db
+systemctl restart mysqld
+```
 Login into MySQL as root user and stop the slave. Then tell the slave to where to look for Master log file, that we have write down on master with SHOW MASTER STATUS; command as File (mysql-bin.000003) and Position (1520) numbers. You must change 192.168.1.1 to the IP address of the Master Server, and change the user and password accordingly.
-
-### mysql 
+```bash
+mysql -u root -p
+```
 mysql> slave stop;
+
 mysql> CHANGE MASTER TO MASTER_HOST='192.168.1.1', MASTER_USER='slave_user', MASTER_PASSWORD='password', MASTER_LOG_FILE='mysql-bin.000003', MASTER_LOG_POS=1520;
+
 mysql> slave start;
+
 mysql> show slave status\G
 *************************** 1. row ***************************
+
                Slave_IO_State: Waiting for master to send event
                   Master_Host: 192.168.1.1
                   Master_User: slave_user
