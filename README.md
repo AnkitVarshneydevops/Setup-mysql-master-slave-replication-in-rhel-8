@@ -90,6 +90,7 @@ vi /etc/my.cnf
 Add the following entries under [mysqld] section and don’t forget to replace IP address of Master server, tecmint with database name etc, that you would like to replicate with Master.
 
 [mysqld]
+
 server-id = 2
 
 Now import the dump file that we exported in earlier command and restart the MySQL service.
@@ -175,6 +176,7 @@ On Slave Server
 Verifying the SLAVE, by running the same command, it will return the same values in the slave too.
 
 mysql> use dev;
+
 mysql> SELECT * FROM employee;
 ```
 +------+
