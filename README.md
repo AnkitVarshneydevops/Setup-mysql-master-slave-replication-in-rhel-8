@@ -21,7 +21,8 @@ relay-log-info-file = /var/lib/mysql/mysql-relay-log.info
 log-bin = /var/lib/mysql/mysql-bin
 Restart the MySQL service.
 
-# /etc/init.d/mysqld restart
+# systemctl restart mysqld
+
 Login into MySQL as root user and create the slave user and grant privileges for replication. Replace slave_user with user and your_password with password.
 
 # mysql
