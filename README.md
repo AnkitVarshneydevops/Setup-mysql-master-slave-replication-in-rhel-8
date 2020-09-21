@@ -2,9 +2,9 @@
 Install a MySQL in Master Server
 First, proceed with MySQL installation using YUM command. If you already have MySQL installation, you can skip this step.
 
-# yum install @mysql
+### yum install @mysql
 
-Configure a MySQL in Master Server
+## Configure a MySQL in Master Server
 
 Open my.cnf configuration file with VI editor.
 
