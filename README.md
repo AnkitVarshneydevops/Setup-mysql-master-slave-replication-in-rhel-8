@@ -8,7 +8,7 @@ First, proceed with MySQL installation using YUM command. If you already have My
 
 Open my.cnf configuration file with VI editor.
 
-# vi /etc/my.cnf
+### vi /etc/my.cnf
 Add the following entries under [mysqld] section and don’t forget to replace DevOps with database name that you would like to replicate on Slave.
 
 server-id = 1
@@ -21,11 +21,11 @@ relay-log-info-file = /var/lib/mysql/mysql-relay-log.info
 log-bin = /var/lib/mysql/mysql-bin
 Restart the MySQL service.
 
-# systemctl restart mysqld
+### systemctl restart mysqld
 
 Login into MySQL as root user and create the slave user and grant privileges for replication. Replace slave_user with user and your_password with password.
 
-# mysql
+### mysql
 mysql> CREATE USER 'slave_user'@'%' IDENTIFIED BY 'password'; 
 mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%';
 mysql> FLUSH PRIVILEGES;
@@ -42,7 +42,7 @@ mysql> SHOW MASTER STATUS;
 mysql> quit;
 Please write down the File (mysql-bin.000003) and Position (11128001) numbers, we required these numbers later on Slave server. Next apply READ LOCK to databases to export all the database and master database information with mysqldump command.
 
-#  mysqldump -u root -p --all-databases --master-data > /root/dbdump.db
+###  mysqldump -u root -p --all-databases --master-data > /root/dbdump.db
 Once you’ve dump all the databases, now again connect to mysql as root user and unlcok tables.
 
 mysql> UNLOCK TABLES;
@@ -58,11 +58,11 @@ In Phase II, we do the installation of MySQL, setting up Replication and then ve
 Install a MySQL in Slave Server
 If you don’t have MySQL installed, then install it using YUM command.
 
-# yum install mysql-server mysql
+### yum install @mysql
 Configure a MySQL in Slave Server
 Open my.cnf configuration file with VI editor.
 
-# vi /etc/my.cnf
+### vi /etc/my.cnf
 Add the following entries under [mysqld] section and don’t forget to replace IP address of Master server, tecmint with database name etc, that you would like to replicate with Master.
 
 [mysqld]
@@ -70,11 +70,11 @@ server-id = 2
 
 Now import the dump file that we exported in earlier command and restart the MySQL service.
 
-# mysql -u root -p < /root/dbdump.db
-# /etc/init.d/mysqld restart
+### mysql -u root -p < /root/dbdump.db
+### systemctl restart mysqld
 Login into MySQL as root user and stop the slave. Then tell the slave to where to look for Master log file, that we have write down on master with SHOW MASTER STATUS; command as File (mysql-bin.000003) and Position (1520) numbers. You must change 192.168.1.1 to the IP address of the Master Server, and change the user and password accordingly.
 
-# mysql -u root -p
+### mysql 
 mysql> slave stop;
 mysql> CHANGE MASTER TO MASTER_HOST='192.168.1.1', MASTER_USER='slave_user', MASTER_PASSWORD='password', MASTER_LOG_FILE='mysql-bin.000003', MASTER_LOG_POS=1520;
 mysql> slave start;
