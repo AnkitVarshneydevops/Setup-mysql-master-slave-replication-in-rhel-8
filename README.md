@@ -2,13 +2,17 @@
 Install a MySQL in Master Server
 First, proceed with MySQL installation using YUM command. If you already have MySQL installation, you can skip this step.
 
-### yum install @mysql
+```bash
+yum install @mysql
+```
 
 ## Configure a MySQL in Master Server
 
 Open my.cnf configuration file with VI editor.
 
-### vi /etc/my.cnf
+```bash
+vi /etc/my.cnf
+```
 Add the following entries under [mysqld] section and don’t forget to replace DevOps with database name that you would like to replicate on Slave.
 
 server-id = 1
@@ -27,9 +31,13 @@ Login into MySQL as root user and create the slave user and grant privileges for
 
 ### mysql
 mysql> CREATE USER 'slave_user'@'%' IDENTIFIED BY 'password'; 
+
 mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%';
+
 mysql> FLUSH PRIVILEGES;
+
 mysql> FLUSH TABLES WITH READ LOCK;
+
 mysql> SHOW MASTER STATUS;
 
 +------------------+----------+--------------+------------------+
