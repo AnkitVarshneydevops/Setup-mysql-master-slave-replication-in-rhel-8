@@ -62,6 +62,7 @@ mysql> SHOW MASTER STATUS;
 1 row in set (0.00 sec)
 
 mysql> quit;
+
 Please write down the File (mysql-bin.000003) and Position (11128001) numbers, we required these numbers later on Slave server. Next apply READ LOCK to databases to export all the database and master database information with mysqldump command.
 ```bash
 mysqldump -u root -p --all-databases --master-data > /root/dbdump.db
@@ -70,6 +71,7 @@ Once you’ve dump all the databases, now again connect to mysql as root user an
 
 mysql> UNLOCK TABLES;
 mysql> quit;
+
 Upload the database dump file on Slave Server (192.168.1.2) using SCP command.
 ```bash
 scp /root/dbdump.db root@192.168.1.2:/root/
@@ -110,8 +112,8 @@ mysql> CHANGE MASTER TO MASTER_HOST='192.168.1.1', MASTER_USER='slave_user', MAS
 mysql> slave start;
 
 mysql> show slave status\G
+```
 *************************** 1. row ***************************
-
                Slave_IO_State: Waiting for master to send event
                   Master_Host: 192.168.1.1
                   Master_User: slave_user
@@ -129,6 +131,7 @@ mysql> show slave status\G
            Replicate_Do_Table:
        Replicate_Ignore_Table:
       Replicate_Wild_Do_Table:
+ ```bash
   Replicate_Wild_Ignore_Table:
                    Last_Errno: 0
                    Last_Error:
@@ -151,14 +154,19 @@ Master_SSL_Verify_Server_Cert: No
                Last_SQL_Errno: 0
                Last_SQL_Error:
 1 row in set (0.00 sec)
+```
 Verifying MySQL Replication on Master and Slave Server
 It’s really very important to know that the replication is working perfectly. On Master server create table and insert some values in it.
 
 On Master Server
 mysql> create database dev;
+
 mysql> use dev;
+
 mysql> CREATE TABLE employee (c int);
+
 mysql> INSERT INTO employee (c) VALUES (1);
+
 mysql> SELECT * FROM employee;
 +------+
 |  c  |
