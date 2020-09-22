@@ -41,7 +41,7 @@ mysql -u root -p
 ```
 mysql> CREATE USER 'slave_user'@'%' IDENTIFIED BY 'password'; 
 
-mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%';
+mysql> GRANT REPLICATION SLAVE ON **.** TO 'slave_user'@'%';
 
 mysql> FLUSH PRIVILEGES;
 
