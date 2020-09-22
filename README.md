@@ -66,11 +66,12 @@ mysqldump -u root -p --all-databases --master-data > /root/dbdump.db
 Once you’ve dump all the databases, now again connect to mysql as root user and unlcok tables.
 
 mysql> UNLOCK TABLES;
+
 mysql> quit;
 
 Upload the database dump file on Slave Server (192.168.1.2) using SCP command.
 ```bash
-scp /root/dbdump.db root@192.168.1.2:/root/
+scp /root/dbdump.db <username>@192.168.1.2:/tmp/
 ```
 That’s it we have successfully configured Master server, let’s proceed to Phase II section.
 
@@ -95,7 +96,7 @@ server-id = 2
 
 Now import the dump file that we exported in earlier command and restart the MySQL service.
 ```bash
-mysql -u root -p < /root/dbdump.db
+mysql -u root -p < /tmp/dbdump.db
 systemctl restart mysqld
 ```
 Login into MySQL as root user and stop the slave. Then tell the slave to where to look for Master log file, that we have write down on master with SHOW MASTER STATUS; command as File (mysql-bin.000003) and Position (1520) numbers. You must change 192.168.1.1 to the IP address of the Master Server, and change the user and password accordingly.
